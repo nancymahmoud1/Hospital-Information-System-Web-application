@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <style>
+        :root {
+            --primary-color: #1c97a5;
+            --background-color-secondary: #e9ecef;
+            --text-color-secondary: #848484;
+            --wtob: #fff;
+            --btow: #000;
+            --w2tob2: #e2e8f0;
+            --w3tob3: #e9ecef;
+        }
+
+        @media(prefers-color-scheme: dark) {
+            :root {
+                --text-color-secondary: #aaaaaa;
+                --wtob: #000;
+                --btow: #fff;
+                --w2tob2: #242424;
+                --w3tob3: #808080;
+            }
+        }
+
+        /* Custom styles */
+        body {
+            background-color: var(--w2tob2);
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            margin-top: 100px;
+            padding: 20px;
+            background-color: var(--wtob);
+            border-radius: 8px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            color: var(--btow);
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            background-color: gainsboro;
+        }
+
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+            border: none;
+            background-color: var(--primary-color);
+        }
+
+        a {
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            color: #23acbb;
+        }
+        option:hover{
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-container" style="text-align: center;">
+            <h2 class="mb-4">Login</h2>
+            {% if message %}
+            <div class="alert alert-warning">{{ message }} </div>
+            {% endif %}
+            <form action="/login" method="post">
+                <div class="form-group" style="display: flex; flex-direction: column;">
+                    <label for="job" style="text-align: center; width: 100%;">Job Title</label>
+                    <select name="job" id="job" required
+                        style="color: grey; width: 100%; padding: 5px; border-color: lightgrey; border-radius: 5px;">
+                        <option value="" disabled selected>Select</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="patient">Patient</option>
+                        <option value="nurse">Nurse</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" name="email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Password">
+                </div>
+                <button type="submit" id="loginButton" class="btn btn-primary btn-block">Login</button>
+            </form>
+            <hr>
+            <p class="text-center">Don't have an account? <a href="/register">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginButton').onclick = function () {
+            this.style.backgroundColor = '#23acbb';
+        };
+    </script>
+</body>
+
+</html>
