@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sign Up</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1c97a5;
+            --background-color-secondary: #e9ecef;
+            --text-color-secondary: #848484;
+            --wtob: #fff;
+            --btow: #000;
+            --w2tob2: #e2e8f0;
+            --w3tob3: #e9ecef;
+        }
+
+        @media(prefers-color-scheme: dark) {
+            :root {
+                --text-color-secondary: #aaaaaa;
+                --wtob: #000;
+                --btow: #fff;
+                --w2tob2: #242424;
+                --w3tob3: #808080;
+            }
+        }
+
+        body {
+            background-color: var(--w2tob2);
+            color: var(--btow);
+        }
+
+        .container {
+            max-width: 400px;
+            margin-top: 50px;
+        }
+
+        select[name="job"] {
+            color: grey;
+            width: 100%;
+            padding: 5px;
+            border-color: lightgrey;
+            border-radius: 5px;
+            background-color: gainsboro;
+        }
+
+        select[name="job"]:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .custom-file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            height: 50px;
+        }
+
+        .custom-file-input {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            height: 100%;
+        }
+
+        .custom-file-label {
+            color: grey;
+        }
+
+        .custom-file-label:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            background-color: gainsboro;
+        }
+
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+            border: none;
+            background-color: var(--primary-color);
+        }
+
+        a {
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            color: #23acbb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2 class="mb-4">Sign Up</h2>
+        {% if msg %}
+        <div class="alert alert-warning">{{ msg }}</div>
+        {% endif %}
+        <form action="/register" method="post" onsubmit="return validateForm()" enctype="multipart/form-data">
+            <div class="form-group">
+                <select name="job" id="job" required>
+                    <option value="" disabled selected>Job Title</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="patient">Patient</option>
+                    <option value="nurse">Nurse</option>
+                </select>
+            </div>
+            <div class="custom-file-input-wrapper">
+                <input type="file" id="profile_photo" name="profile_photo" class="custom-file-input" accept="image/*">
+                <label for="profile_photo" class="custom-file-label">Profile Photo</label>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="firstname" placeholder="First Name" required>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="lastname" placeholder="Last Name" required>
+            </div>
+            <div class="form-group doctor-field" style="display: none;">
+                <input type="text" class="form-control" name="brief" placeholder="Brief">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="phone" placeholder="Phone Number" required>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="address" placeholder="Address" required>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="confirmPassword" name="confirm_password"
+                    placeholder="Confirm Password" required>
+                <small id="passwordHelp" class="form-text text-danger d-none">Passwords do not match.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            <p class="text-center">Already have an account? <a href="/login">Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                document.getElementById("passwordHelp").classList.remove("d-none");
+                return false;
+            } else {
+                document.getElementById("passwordHelp").classList.add("d-none");
+                return true;
+            }
+        }
+        document.getElementById('profile_photo').addEventListener('change', function () {
+            var fileName = this.value.split('\\').pop();
+            var label = this.nextElementSibling;
+            label.innerText = fileName ? fileName : 'Choose File';
+        });
+
+        document.getElementById('job').addEventListener('change', function () {
+            var job = this.value;
+            var doctorField = document.querySelector('.doctor-field');
+            if (job === 'doctor') {
+                doctorField.style.display = 'block';
+            } else {
+                doctorField.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

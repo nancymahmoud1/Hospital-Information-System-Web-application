@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <!-- Stylesheets for the template, normalization of styles, and icons -->
+    <link rel="stylesheet" href="../static/template_profile.css">
+    <link rel="stylesheet" href="../static/00.styles.css">
+    <link rel="stylesheet" href="../static/00.normalize.css">
+    <link rel="stylesheet" href="../static/00.all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header with the title 'USER PROFILE' -->
+    <div class="profile-header">
+        <div>
+            <i class="fa-solid fa-user"></i>
+            <span class="flex">USER PROFILE</span>
+        </div>
+        <span id="date-time"></span>
+    </div>
+    <div class="main-container"></div>
+    <!-- Main profile page layout -->
+    <div class="profile_page">
+        <!-- Left column for profile info and social links -->
+        <div id="profile-column">
+            <!-- Home button -->
+            <div id="home-button">
+                <a href="/"><i class="fa-solid fa-house" style="color: var(--btow); height: fit-content;"></i></a>
+                <span>Home Page</span>
+            </div>
+            <div class="user-info">
+                <div class="image">
+                    <!-- Profile image -->
+                    <img alt="photo"
+                        src="{{ data['photo'] if data['photo'] else 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Doctor-512.png' }}">
+                </div>
+                <!-- Username and details -->
+                <span id="user-title">{{ data['fname'] }} {{ data['lname'] }}</span>
+                <span>{{ data['job'] }}</span>
+                <span>{{ data['address'] }}</span>
+                <form action="/edit" method="post">
+                    <button type="button" class="page-button" id="editBtn"><span>Edit Profile</span></button>
+                </form>
+            </div>
+            <!-- The Modal -->
+            <!-- Edit profile modal -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h1 style="margin: 0 auto 20px 0;">Edit User Information</h1>
+                    <form action="/update" method="POST" enctype="multipart/form-data">
+                        <label for="firstname">First Name</label>
+                        <input type="text" name="firstname" value="{{ data['fname'] }}">
+                        <label for="lastname">Last Name</label>
+                        <input type="text" name="lastname" value="{{ data['lname'] }}">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" value="{{ data['email'] }}">
+                        <label for="password">Password</label>
+                        <input type="text" name="password" value="{{ data['password'] }}">
+                        <label for="phone">Phone</label>
+                        <input type="text" name="phone" value="{{ data['phonenumber'] }}">
+                        <label for="address">Address</label>
+                        <input type="text" name="address" value="{{ data['address'] }}">
+                        {% if is_doctor %}
+                        <label for="brief">Brief</label>
+                        <input type="text" name="brief" value="{{ data['brief'] }}">
+                        {% endif %}
+                        <label for="profile_photo">Profile Photo</label>
+                        <span class="photo-edit">
+                            <div class="custom-file-input">
+                                <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+                                <label for="profile_photo" class="custom-file-label">Choose File</label>
+                            </div>
+                            <span>
+                                <input type="checkbox" id="remove_photo" name="remove_photo" value="1"
+                                    style="display:none;">
+                                <button type="button" id="removePhotoBtn">Remove</button>
+                            </span>
+                        </span>
+                        <input type="submit" value="Update">
+                    </form>
+                </div>
+            </div>
+            <!-- List of social media and other links -->
+            <ul class="social-links">
+                <li>
+                    <span><i class="fas fa-globe"></i>Website</span>
+                    <a href="https://www.Google.com/" target="_blank">Click Here</a>
+                </li>
+                <li>
+                    <span><i class="fa-brands fa-facebook"></i>Facebook</span>
+                    <a href="https://www.facebook.com/" target="_blank">Click Here</a>
+                </li>
+                <li>
+                    <span><i class="fa-brands fa-linkedin"></i>Linkedin</span>
+                    <a href="https://www.Linkedin.com/" target="_blank">Click Here</a>
+                </li>
+                <li>
+                    <span><i class="fa-brands fa-instagram"></i>Instagram</span>
+                    <a href="https://www.Instagram.com/" target="_blank">Click Here</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Right column for detailed user data and User activity -->
+        <div class="right-column">
+            <ul class="user-details">
+                <li>
+                    <div>
+                        <span class="question">Name</span><span class="answer"> {{ data['fname'] }}
+                            {{data['lname'] }} </span>
+                    </div>
+                </li>
+                <li>
+                    <div><span class="question">Email</span><span class="answer"> {{ data['email'] }} </span></div>
+                </li>
+                <li>
+                    <div><span class="question">Phone Number</span><span class="answer"> {{ data['phonenumber'] }}
+                        </span>
+                    </div>
+                </li>
+                <li>
+                    <div><span class="question">Address</span><span class="answer"> {{ data['address'] }} </span>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Appointments box -->
+            {% if is_doctor or is_patient %}
+            <div class="activity-box">
+                <div>
+                    <span id="addActivityTitle">{{ data['job'] }} appointments</span>
+                </div>
+                <span class="activity-events">
+                    <ul id="activityEventsList">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Doctor Name</th>
+                                    <th>Appointment Date</th>
+                                    <th>Appointment Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Header and loop for today's appointments -->
+                                {% set today_appointments_exist = appointments | selectattr("6", "equalto", True) | list
+                                | length > 0 %}
+                                {% if today_appointments_exist %}
+                                <tr>
+                                    <td colspan="3" class="today-appointments-header row-header">
+                                        <p>Today's Appointments</p>
+                                    </td>
+                                </tr>
+                                {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in
+                                appointments %}
+                                {% if is_today %}
+                                <tr class="today-appointment">
+                                    <td>{{ fname }} {{ lname }}</td>
+                                    <td>{{ appointment_date }}</td>
+                                    <td>{{ appointment_time }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
+                                <!-- Header and loop for next days' appointments -->
+                                {% set next_appointments_exist = appointments | selectattr("5", "equalto", False) |
+                                selectattr("6", "equalto", False) | list | length > 0 %}
+                                {% if next_appointments_exist %}
+                                <tr>
+                                    <td colspan="3" class="next-appointments-header row-header">
+                                        <p>Next Days' Appointments</p>
+                                    </td>
+                                </tr>
+                                {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in
+                                appointments %}
+                                {% if not is_past and not is_today %}
+                                <tr class="next-appointment">
+                                    <td>{{ fname }} {{ lname }}</td>
+                                    <td>{{ appointment_date }}</td>
+                                    <td>{{ appointment_time }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
+                                <!-- Header for past appointments -->
+                                {% set past_appointments_exist = appointments | selectattr("5", "equalto", True) | list
+                                | length > 0 %}
+                                {% if past_appointments_exist %}
+                                <tr>
+                                    <td colspan="3" class="past-appointments-header row-header">
+                                        <p>Past Appointments</p>
+                                    </td>
+                                </tr>
+                                {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in
+                                appointments %}
+                                {% if is_past %}
+                                <tr class="past-appointment">
+                                    <td>{{ fname }} {{ lname }}</td>
+                                    <td>{{ appointment_date }}</td>
+                                    <td>{{ appointment_time }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </ul>
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- ------------------------------------------------------------------------------------------------------------------------------------------------ -->
+            <!-- Reviews Box-->
+            {% if is_doctor %}
+            <div class="activity-box">
+                <div>
+                    <span id="addActivityTitle">Patient Reviews</span>
+                </div>
+                <span class="activity-events">
+                    <ul id="activityEventsList">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Stars</th>
+                                    <th>Review</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in reviews %}
+                                <tr>
+                                    <td>{{ review.fname }} {{ review.lname }}</td>
+                                    <td>{{ review.rating }}</td>
+                                    <td>{{ review.review }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </ul>
+                </span>
+            </div>
+            {% endif %}
+            <!-- ------------------------------------------------------------------------------------------------------------------------------------------------ -->
+            <!-------prescription box for the nurse------>
+            {% if is_nurse or is_patient %}
+            <div class="activity-box">
+                <div>
+                    <span id="addActivityTitle">Prescriptions</span>
+                </div>
+                <span class="activity-events">
+                    <ul id="activityEventsList">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Drug Name</th>
+                                    <th>Dosage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient_name, drug, dosage in prescriptions %}
+                                <tr>
+                                    <td>{{ drug }}</td>
+                                    <td>{{ dosage }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </ul>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="/static/template_profile_responsive.js"></script>
+</body>
+
+</html>

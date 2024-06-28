@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <!-- Stylesheets for the template, normalization of styles, and icons -->
+    <link rel="stylesheet" href="../static/template_home.css" />
+    <link rel="stylesheet" href="../static/00.styles.css" />
+    <link rel="stylesheet" href="../static/00.normalize.css" />
+    <link rel="stylesheet" href="../static/00.all.min.css" />
+    <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet" />
+</head>
+<!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
+
+<body>
+    <div id="Header">
+        <div class="header-one">
+            <span class="title"><i class="fa fa-syringe"></i> Internal Medicine Department</span>
+            <span id="date-time"></span>
+        </div>
+        <div class="header-two">
+            <div class="main-container">
+                <div class="image">
+                    <form action="/profile">
+                        <button class="mm">
+                            <img alt="photo"
+                                src="{{ data['photo'] if data['photo'] else 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Doctor-512.png' }}">
+                        </button>
+                    </form>
+                </div>
+                <div class="go-to-options">
+                    <span><a href="#Doctors">Doctors</a></span>
+                    {% if is_patient %}
+                    <span><a href="#Service">Service</a></span>
+                    {% endif %}
+                    {% if is_doctor %}
+                    <span><a href="#doc-DR">Give Diagnostic Report</a></span>
+                    {% endif %}
+                    {% if is_patient or is_nurse %}
+                    <span><a href="#Medicine">Medicine</a></span>
+                    {% endif %} {% if is_patient or is_doctor %}
+                    <span><a href="#Appointment">Appointment</a></span>
+                    {% endif %}
+                    <span><a href="/logout">Log Out</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="Home">
+        <div class="main-container">
+            <div class="background-blur"></div>
+            <div class="landing-text">
+                <h1>Welcome to Hospital Team 13</h1>
+                <h4>
+                    Welcome to Hospital Team 13. We are dedicated to providing exceptional healthcare services, ensuring
+                    patient safety and comfort at all times.
+                </h4>
+            </div>
+            <div class="landing-image flex">
+                <div class="image">
+                    <img src="https://www.pngall.com/wp-content/uploads/2018/05/Doctor-PNG-File-Download-Free.png"
+                        alt="img" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Getting the doctors name from the database -->
+    <div class="doctors" id="Doctors">
+        <div class="container">
+            <div class="title-box">
+                <h1>Doctors</h1>
+            </div>
+            <div class="doctors-holder">
+                {% for doctor in doctors %}
+                <div class="doctors-box">
+                    <h3>{{ doctor.fname }} {{ doctor.lname }}</h3>
+                    <p>Doctor</p>
+                    <div class="image">
+                        {% if doctor.photo %}
+                        <img src="{{ doctor.photo }}" alt="Doctor's Photo" />
+                        {% else %}
+                        <img src="https://img.freepik.com/premium-vector/doctor-icon-man-avatar-medical-mask-coat_53562-15368.jpg?w=2000"
+                            alt="Default Doctor Photo" />
+                        {% endif %}
+                    </div>
+                    <span>
+                        {% set rating = doctor_ratings.get(doctor.doc_id, 0) %}
+                        {% for i in range(1, 6) %}
+                        {% if i <= rating|int %} <i class="fa-solid fa-star"></i>
+                            {% else %}
+                            <i class="fa-regular fa-star"></i>
+                            {% endif %}
+                            {% endfor %}
+                    </span>
+                    <p>{{ doctor.brief if doctor.brief else "No brief available." }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- Start Services Section -->
+    {% if is_patient %}
+    <div class="services" id="Service">
+        <div class="container">
+            <div class="title-box">
+                <h1>SERVICES</h1>
+            </div>
+            <div class="srv-holder">
+                <div class="srv-card" id="appointmentCard">
+                    <div class="srv-box">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <h3>Appointment</h3>
+                        <div>
+                            <span class="number">
+                                <p>01</p>
+                                <button class="page-button" onclick="toggleAppointmentForm()">
+                                    Make an appointment
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Getting the doctors name from the database for reservation -->
+                    <div class="appointment-container">
+                        <h2>Reserve Appointment</h2>
+                        <form action="/make_appointment" method="POST">
+                            <!-- link for the appointment with database -->
+                            <div class="form-group">
+                                <label for="doctor">Choose a Doctor:</label>
+                                <select name="doctor" id="doctor" required>
+                                    <option value="" disabled selected>Select a Doctor</option>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.doc_id }}">
+                                        {{ doctor.fname }} {{ doctor.lname }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointment_date">Date:</label>
+                                <select name="appointment_date" id="appointment_date" required>
+                                    <option value="" disabled selected>Select a Date</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointment_time">Time:</label>
+                                <select name="appointment_time" id="appointment_time" required>
+                                    <option value="" disabled selected>Select a Time</option>
+                                </select>
+                            </div>
+                            <span style="display: flex; justify-content: space-between;">
+                                <button type="button" onclick="cancelAppointment()">Cancel</button>
+                                <button type="submit" onclick="reserveAppointment()">Reserve</button>
+                            </span>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="srv-card" id="helpCard">
+                    <div class="srv-box">
+                        <i class="fa-solid fa-briefcase-medical"></i>
+                        <h3>Help By Specialist</h3>
+                        <div>
+                            <span class="number">
+                                <p>01</p>
+                                <button class="page-button" onclick="toggleInputContainer()">
+                                    Write your condition
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="input-container" id="inputContainer">
+                        <textarea placeholder="Write something..." id="userInput" required></textarea>
+                        <span style="display: flex; justify-content: space-between; width: 60%;">
+                            <button onclick="toggleInputContainer()">Cancel</button>
+                            <button onclick="handleSubmit()">Submit</button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="srv-box" style="width: 350px;height: 300px;">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <h3>Get Diagnostic Report</h3>
+                    <div>
+                        <span class="number">
+                            <p>01</p>
+                            <button class="page-button" id="getItButton" onclick="showDownloadCancel()">
+                                Get it!
+                            </button>
+                            <button class="page-button hidden" id="downloadButton" onclick="resetButtons()">
+                                Download
+                            </button>
+                            <button class="page-button hidden" id="cancelButton" onclick="resetButtons()">
+                                Cancel
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    </div>
+    <!-- Prescriptions for the doctor -->
+    {% if is_doctor %}
+    <div class="doc-DR" id="doc-DR">
+        <div class="container">
+            <div class="title-box">
+                <h1>Give Diagnostic Report</h1>
+            </div>
+            <div class="doc-DR-box">
+                <form action="/prescribe" method="POST">
+                    <div>
+                        <label for="patient_id">Choose the Patient</label>
+                        <select name="patient_id" id="patient"
+                            style="padding: 5px; border: 1px solid var(--primary-color); color: var(--primary-color);"
+                            required>
+                            <option value="" disabled selected>Select Patient</option>
+                            {% for i, patient_name in patient_names|enumerate %}
+                            <option value="{{ patient_ids[i] }}">
+                                {{ patient_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <div>
+                        <label for="nurse_id">Choose the Nurse</label>
+                        <select name="nurse_id" id="nurse"
+                            style=" padding: 5px; border: 1px solid var(--primary-color); color: var(--primary-color);"
+                            required>
+                            <option value="" disabled selected>Select Nurse</option>
+                            {% for i, nurse_name in nurse_names|enumerate %}
+                            <option value="{{ nurse_ids[i] }}">
+                                {{ nurse_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="drug">Drug:</label>
+                        <input type="text" id="drug" name="drug"
+                            style="padding: 5px;border: 1px solid var(--primary-color); color: var(--primary-color);"
+                            required />
+                    </div>
+                    <div>
+                        <label for=" dosage">Dosage:</label>
+                        <input type="text" id="dosage" name="dosage"
+                            style="padding: 5px;border: 1px solid var(--primary-color); color: var(--primary-color);"
+                            required />
+                    </div>
+                    <div>
+                        <button type="submit" class="page-button">Prescribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        <!-- End Services Section -->
+        <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+        <!-- Start of Medicines Sections -->
+        {% if is_nurse or is_patient %}
+        <div class="Medicine" id="Medicine">
+            <div class="title-box">
+                <h1>Medicine</h1>
+            </div>
+            <div class="main-container">
+                {% if is_nurse %}
+                <table class="page-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Drug</th>
+                            <th>Dosage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fname, lname, drug, dosage in prescriptions %}
+                        <tr>
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ drug }}</td>
+                            <td>{{ dosage }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+                {% if is_patient%}
+                <table class="page-table">
+                    <tbody>
+                        <tr>
+                            <th>Nurse</th>
+                            <th>Next-Drug</th>
+                        </tr>
+                        <!--Prescriptions table for the patient-->
+                        <tr>
+                            {% for fname , lname ,drug in prescriptions %}
+                        <tr>
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ drug }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- End of Medicines Sections -->
+        <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+        <!-- Start of Appointment Sections -->
+        {% if is_doctor or is_patient %}
+        <div class="Appointment" id="Appointment">
+            <div class="title-box">
+                <h1>Appointment</h1>
+            </div>
+            <div class="main-container">
+                {% if is_doctor %}
+                <table class="page-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Header and loop for today's appointments -->
+                        {% set today_appointments_exist = appointments | selectattr("6", "equalto", True) | list |
+                        length > 0 %}
+                        {% if today_appointments_exist %}
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if is_today %}
+                        <tr class="today-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+
+                        <!-- Header and loop for future appointments -->
+                        {% set future_appointments_exist = appointments | selectattr("5", "equalto", False) |
+                        selectattr("6", "equalto", False) | list | length > 0 %}
+                        {% if future_appointments_exist %}
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if not is_past and not is_today %}
+                        <tr class="future-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+
+                        <!-- Header for past appointments -->
+                        {% set past_appointments_exist = appointments | selectattr("5", "equalto", True) | list | length
+                        > 0 %}
+                        {% if past_appointments_exist %}
+                        <tr>
+                            <td colspan="3" class="past-appointments-header row-header"
+                                style="background-color: #cac6c6;">
+                                <p>Past Appointments</p>
+                            </td>
+                        </tr>
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if is_past %}
+                        <tr class="past-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+                {% endif %}
+                {% if is_patient %}
+                <table class="page-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Header and loop for today's appointments -->
+                        {% set today_appointments_exist = appointments | selectattr("6", "equalto", True) | list |
+                        length > 0 %}
+                        {% if today_appointments_exist %}
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if is_today %}
+                        <tr class="today-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+
+                        <!-- Header and loop for future appointments -->
+                        {% set future_appointments_exist = appointments | selectattr("5", "equalto", False) |
+                        selectattr("6", "equalto", False) | list | length > 0 %}
+                        {% if future_appointments_exist %}
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if not is_past and not is_today %}
+                        <tr class="future-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+
+                        <!-- Header for past appointments -->
+                        {% set past_appointments_exist = appointments | selectattr("5", "equalto", True) | list | length
+                        > 0 %}
+                        {% if past_appointments_exist %}
+                        <tr>
+                            <td colspan="3" class="past-appointments-header row-header"
+                                style="background-color: #cac6c6;">
+                                <p>Past Appointments</p>
+                            </td>
+                        </tr>
+                        {% for id, fname, lname, appointment_date, appointment_time, is_past, is_today in appointments
+                        %}
+                        {% if is_past %}
+                        <tr class="past-appointment">
+                            <td>{{ fname }} {{ lname }}</td>
+                            <td>{{ appointment_date }}</td>
+                            <td>{{ appointment_time }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- End of Appointment Sections -->
+        <!-- Start reviews section -->
+        {% if is_patient %}
+        <div class="reviews-container">
+            <div class="title-box">
+                <h1>Reviews</h1>
+            </div>
+            <div class="main-container">
+                <form action="/reviews" method="post" class="form-group">
+                    <div class="review-doctor" style="width: 300px;">
+                        <label for="doc_id">Choose the Doctor</label>
+                        <select name="doc_id" id="doctor" required>
+                            <option value="" selected disabled>Select Doctor</option>
+                            {% for doc_id, doc_name in unique_doctors.items() %}
+                            <option value="{{ doc_id }}">
+                                {{ doc_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="rating">Rating</label>
+                        <span class="rating">
+                            <input type="radio" id="star5" name="rating" value="5" required />
+                            <label for="star5" title="Awesome"></label>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4" title="Great"></label>
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3" title="Good"></label>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2" title="Poor"></label>
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1" title="Terrible"></label>
+                        </span>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="review" style="margin-top: 20px;">Review</label>
+                        <textarea placeholder="Write Your Review..." id="review" name="review" required></textarea>
+                    </div>
+                    <button type="submit" class="page-button">Submit Review</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        <!-- End of reviews section -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+        <footer id="Footer">
+            <div class="main-container">
+                <span>Made by team 13 :)</span>
+                <div>
+                    <button onclick="window.open('https://www.facebook.com', '_blank')">
+                        <i class="fa-brands fa-facebook"></i>
+                    </button>
+                    <button onclick="window.open('https://www.instagram.com', '_blank')">
+                        <i class="fa-brands fa-instagram"></i>
+                    </button>
+                    <button onclick="window.open('https://www.linkedin.com', '_blank')">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+        <script src="/static/template_home_responsive.js"></script>
+</body>
+
+</html>
