@@ -41,10 +41,6 @@ body {
     margin: 0 auto;
 }
 
-
-
-
-
 .image>img {
     width: 100%;
 }
@@ -172,7 +168,7 @@ ul {
 }
 
 .header-two>.main-container>.image::after {
-    content: "Go To profile page";
+    content: "Go To profile ";
     position: absolute;
     padding: 10px;
     background-color: var(--wtob);
